@@ -246,7 +246,7 @@ const char* exportArrowFormatStr(
     case TypeKind::TIMESTAMP:
       // TODO: need to figure out how we'll map this since in Velox we currently
       // store timestamps as two int64s (epoch in sec and nanos).
-      return "ttn"; // time64 [nanoseconds]
+      return "tsu:"; // time64 [nanoseconds]
     // Complex/nested types.
     case TypeKind::ARRAY:
       static_assert(sizeof(vector_size_t) == 4);
@@ -757,7 +757,7 @@ TypePtr importFromArrow(const ArrowSchema& arrowSchema) {
 
     case 't': // temporal types.
       // Mapping it to ttn for now.
-      if (format[1] == 't' && format[2] == 'n') {
+      if (format[1] == 's' && format[2] == 'u') {
         return TIMESTAMP();
       }
       if (format[1] == 'd' && format[2] == 'D') {

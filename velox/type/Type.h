@@ -657,6 +657,47 @@ const std::shared_ptr<const ScalarType<KIND>> ScalarType<KIND>::create() {
   return instance;
 }
 
+using Precision = facebook::velox::Timestamp::Precision;
+
+TypePtr TIMESTAMP(uint8_t precision);
+
+class TimestampType : public ScalarType<TypeKind::TIMESTAMP> {
+ public:
+  TimestampType(uint8_t precision)
+      : _precision(static_cast<Precision>(precision)) {}
+
+  inline uint8_t precision() const {
+    return static_cast<uint8_t>(_precision);
+  }
+
+  const std::shared_ptr<const Type>& childAt(uint32_t) const override {
+    throw std::invalid_argument{"UnknownType type has no children"};
+  }
+
+  const char* name() const override {
+    return "TIMESTAMP";
+  }
+
+  std::string toString() const override {
+    return fmt::format("TIMESTAMP({})", precision());
+  }
+
+  folly::dynamic serialize() const override {
+    folly::dynamic obj = folly::dynamic::object;
+    obj["name"] = "TimestampType";
+    obj["type"] = name();
+    obj["precision"] = precision();
+    return obj;
+  }
+
+  static TypePtr deserialize(const folly::dynamic& obj) {
+    return std::make_shared<TimestampType>(obj["precision"].asInt());
+  }
+
+ private:
+  const Precision _precision;
+};
+
 /// This class represents the fixed-point numbers.
 /// The parameter "precision" represents the number of digits the
 /// Decimal Type can support and "scale" represents the number of digits to the
@@ -1129,7 +1170,7 @@ using BigintType = ScalarType<TypeKind::BIGINT>;
 using HugeintType = ScalarType<TypeKind::HUGEINT>;
 using RealType = ScalarType<TypeKind::REAL>;
 using DoubleType = ScalarType<TypeKind::DOUBLE>;
-using TimestampType = ScalarType<TypeKind::TIMESTAMP>;
+// using TimestampType = ScalarType<TypeKind::TIMESTAMP>;
 using VarcharType = ScalarType<TypeKind::VARCHAR>;
 using VarbinaryType = ScalarType<TypeKind::VARBINARY>;
 

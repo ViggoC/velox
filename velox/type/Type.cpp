@@ -215,6 +215,7 @@ void Type::registerSerDe() {
   registry.Register(
       "IntervalYearMonthType", IntervalYearMonthType::deserialize);
   registry.Register("DateType", DateType::deserialize);
+  registry.Register("TimestampType", TimestampType::deserialize);
 }
 
 std::string ArrayType::toString() const {
@@ -770,6 +771,11 @@ VELOX_DEFINE_SCALAR_ACCESSOR(VARBINARY);
 
 TypePtr UNKNOWN() {
   return TypeFactory<TypeKind::UNKNOWN>::create();
+}
+
+TypePtr TIMESTAMP(const uint8_t precision) {
+  // todo: check if precision is valid
+  return std::make_shared<TimestampType>(precision);
 }
 
 TypePtr DECIMAL(const uint8_t precision, const uint8_t scale) {

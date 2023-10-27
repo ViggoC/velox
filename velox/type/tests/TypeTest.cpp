@@ -92,8 +92,8 @@ TEST(TypeTest, hugeint) {
 }
 
 TEST(TypeTest, timestamp) {
-  auto t0 = TIMESTAMP();
-  EXPECT_EQ(t0->toString(), "TIMESTAMP");
+  auto t0 = TIMESTAMP(3);
+  EXPECT_EQ(t0->toString(), "TIMESTAMP(3)");
   EXPECT_EQ(t0->size(), 0);
   EXPECT_THROW(t0->childAt(0), std::invalid_argument);
   EXPECT_EQ(t0->kind(), TypeKind::TIMESTAMP);
